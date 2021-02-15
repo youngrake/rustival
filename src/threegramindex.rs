@@ -1,26 +1,26 @@
-use std::collections::{HashMap, LinkedList};
+use std::collections::HashMap;
 
 pub struct Threegramindex {
-    files: Vec<String>,
-    index: HashMap<String, LinkedList<String>>,
+    index: HashMap<String, Vec<String>>,
 }
 
 impl Threegramindex {
-    pub fn new(files: Vec<String>) -> Self {
+    pub fn new() -> Self {
         Self {
-            files,
             index: std::collections::HashMap::new(),
         }
     }
 }
 
 impl Threegramindex {
-    pub fn get_index(&self) -> &HashMap<String, LinkedList<String>> {
+    pub fn get_index(&self) -> &HashMap<String, Vec<String>> {
         &self.index
     }
 
-    pub fn get_files(&self) -> Vec<String> {
-        self.files.to_vec()
+    pub fn add_words(&mut self, words: &Vec<String>) {
+        for word in words {
+            self.add_word(word.to_string());
+        }
     }
 
     pub fn add_word(&mut self, word: String) {
@@ -30,19 +30,16 @@ impl Threegramindex {
             let key = &w[i..i + 3];
             if self.index.contains_key(key) {
                 let container = &mut self.index.get_mut(key).unwrap();
-                container.push_back(word.to_owned());
+                container.push(word.to_string());
             } else {
+                &self.index.insert(key.to_string(), Vec::new());
+
                 &self
                     .index
-                    .insert(key.to_string(), std::collections::LinkedList::new())
+                    .get_mut(&key.to_string())
                     .unwrap()
-                    .push_back(word.to_owned());
+                    .push(word.to_string());
             }
         }
     }
-}
-
-#[test]
-fn it_works() {
-    assert_eq!(1, 1);
 }
